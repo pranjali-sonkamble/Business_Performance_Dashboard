@@ -1,95 +1,84 @@
 # Business Performance Dashboard
 
-An end-to-end retail sales performance dashboard built on the UCI Online Retail dataset — covering revenue trends, product performance, and geographic sales concentration for a UK-based online retailer.
+An end-to-end **retail sales analytics and business intelligence dashboard** built with the UCI Online Retail dataset. The project transforms transaction-level data into decision-ready KPIs, trend analysis, product performance insights, and geographic sales analysis.
 
----
+## 🎯 Business Objective
 
-## Table of Contents
-- [Problem Statement](#problem-statement)
-- [Dataset](#dataset)
-- [Methodology](#methodology)
-- [Dashboard Preview](#dashboard-preview)
-- [Key Findings](#key-findings)
-- [Business Recommendations](#business-recommendations)
-- [How to Reproduce](#how-to-reproduce)
-- [Limitations & Future Work](#limitations--future-work)
-- [Tools & Technologies](#tools--technologies)
+Provide a single analytical view to answer:
 
----
+- How is revenue changing over time?
+- Which products and order lines drive sales?
+- Which international markets contribute the most revenue?
+- What data-quality issues could distort product-performance conclusions?
 
-## Problem Statement
+## 🧰 Tech Stack
 
-A retail business needs a single view of sales performance to answer the questions that actually drive decisions: what's the revenue trend, which products are carrying the business, and where is the customer base concentrated geographically. This dashboard consolidates raw transaction-level data into a decision-ready view for that purpose.
+**Excel** · **Power BI** · **DAX** · **Data Cleaning** · **Data Visualization**
 
----
+**Dataset:** UCI Online Retail — UK-based online retailer, December 2010–December 2011.
 
-## Dataset
+## 🔄 Analytical Workflow
 
-This project uses the **UCI Online Retail dataset** — real transaction-level data from a UK-based online retailer selling mostly unique all-occasion gifts, covering **December 2010 to December 2011**. Each row is a single line item within an invoice, with fields for invoice number, product code/description, quantity, unit price, invoice date, customer ID, and country. It was chosen because it's a genuine (not synthetic) e-commerce dataset, which surfaces real messiness — like non-product entries mixed into the product list (see [Limitations](#limitations--future-work)) — that a synthetic dataset wouldn't show.
+```
+Raw Transaction Data
+        ↓
+Data Cleaning & Feature Creation
+        ↓
+Power BI Data Model
+        ↓
+DAX Measures & KPIs
+        ↓
+Sales / Product / Geographic Analysis
+        ↓
+Business Insights
+```
 
----
+## 📊 Dashboard Preview
 
-## Methodology
-
-- **Data cleaning (Excel):** initial feature creation and cleanup before modeling — e.g. deriving `Month` / `Month_Sort` fields for correctly-ordered time trend charts (a common necessity since raw month names sort alphabetically, not chronologically, by default).
-- **Data modeling (Power BI):** core measures built with DAX — `Total Sales`, `Total Orders`, `Average Order Value`, and `Products Sold` — driving the four headline KPI cards.
-- **Geographic view:** sales by country, with the UK deliberately excluded from that specific chart — the UK is the retailer's home market and dominates volume so heavily that including it flattens every other country's bar to near-invisible. Excluding it is what makes the *secondary* international markets actually readable.
-
----
-
-## Dashboard Preview
-
-### Full Dashboard View
+### Full Dashboard
 ![Dashboard Overview](images/dashboard_overview.png)
 
-### KPI and Sales Trend View
+### KPI & Sales Trend
 ![KPI and Trend](images/dashboard_kpi_trend.png)
 
----
+## 📌 Core KPIs
 
-## Key Findings
+- **Total Sales:** £10.67M
+- **Orders:** 21K
+- **Average Order Value:** £514.65
+- **Unique Products:** 4,063
 
-- **10.67M total sales** across **21K orders**, for an average order value of **£514.65**, with **4,063 unique products sold**.
-- Monthly sales show a clear upward trend across the year — starting around £0.5M–0.7M in the earlier months and climbing to **£1.5M in the final two months**, roughly a **2x increase** from trough to peak.
-- The product performance table reveals a data quality nuance worth calling out directly: the top revenue lines include **"DOTCOM POSTAGE" (£206,248.77)**, **"Manual" (£78,112.82)**, and **"POSTAGE" (£78,101.88)** — these are shipping/manual-adjustment charges, not actual products. The genuine top-selling *product* is **REGENCY CAKESTAND 3 TIER at £174,484.74 across 1,989 orders**, followed by **WHITE HANGING HEART T-LIGHT HOLDER (£106,292.77, 2,260 orders)** — notably the highest *order count* of any line item, suggesting a lower-price, high-frequency bestseller rather than a high-ticket item.
-- Excluding the UK (the dominant home market), **Netherlands and EIRE (Ireland)** are the top two international markets by sales, followed by **Germany and France** — a meaningful concentration in just four countries before the drop-off to Australia, Spain, Switzerland, Belgium, Sweden, and Japan.
+## 🔍 Key Findings
 
-## Business Recommendations
+- Monthly sales increased substantially through the analysis period, reaching approximately £1.5M in the final two months.
+- Shipping/manual adjustment entries such as **DOTCOM POSTAGE**, **Manual**, and **POSTAGE** can distort product rankings if treated as products.
+- **REGENCY CAKESTAND 3 TIER** was the highest genuine product by revenue in the analysis.
+- **WHITE HANGING HEART T-LIGHT HOLDER** combined high order frequency with substantial revenue.
+- Among non-UK markets, the Netherlands and EIRE were the leading markets by sales in this analysis.
 
-- Treat "DOTCOM POSTAGE," "Manual," and "POSTAGE" as non-product transaction types and exclude them from product-performance analysis and reporting — as-is, they're inflating the apparent rank of a "top seller" that isn't actually a product.
-- Netherlands and Ireland are the clearest candidates for deeper international investment (marketing spend, localized promotions) given they already lead all non-UK markets without dedicated attention.
-- WHITE HANGING HEART T-LIGHT HOLDER's combination of high order count and mid-tier revenue suggests it functions as a reliable volume driver — a good candidate for bundling or cross-sell promotions rather than a product to discontinue based on revenue rank alone.
+## 💡 Analytical Takeaway
 
----
+A dashboard is only as reliable as the definitions and data behind its visuals. Product rankings require distinguishing genuine merchandise from postage and adjustment transactions.
 
-## How to Reproduce
+## ▶️ Reproduce the Analysis
 
-1. Download the UCI Online Retail dataset (`Online Retail.xlsx`, UCI Machine Learning Repository).
-2. Open the provided `.pbix` file in `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop.
-3. Point the data source at your local copy of the dataset and refresh.
-4. The `Month` / `Month_Sort` fields and core DAX measures (Total Sales, Total Orders, Average Order Value, Products Sold) will recalculate automatically.
+1. Download the UCI Online Retail dataset.
+2. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop.
+3. Point the model to your local dataset.
+4. Refresh the model.
+5. Review the DAX-driven KPIs and visual analysis.
 
-*(Raw data isn't included in this repo due to size — the `.pbix` file and dashboard screenshots are provided so the build is reproducible from the public dataset directly.)*
+Raw data is not included because of size; the project is designed to be reproducible from the public dataset.
 
----
+## ⚠️ Limitations & Next Steps
 
-## Limitations & Future Work
+- Use a proper Year-Month dimension rather than month name alone.
+- Exclude non-product transaction types during modeling.
+- Add customer segmentation and retention analysis.
+- Add profitability analysis when cost data is available.
 
-- **Non-product entries skew "top product" rankings**, as shown above. A cleaner version of this dashboard would filter out postage/manual/adjustment line items at the data-modeling stage rather than leaving them in the product table.
-- **Month field doesn't distinguish year.** Since the dataset spans Dec 2010–Dec 2011 (13 months), a chart grouped by calendar month name alone may combine December 2010 and December 2011 into a single bucket. Worth verifying, and switching to a proper year-month axis if so.
-- **No customer-level segmentation yet** — the dataset includes `CustomerID`, which would support repeat-vs-one-time customer analysis, cohort retention, or CLV estimation as a strong next iteration.
-- **No profitability view** — this dashboard covers revenue and order volume, not margin. Without cost data, "top product by revenue" isn't the same as "most profitable product."
+## 👩‍💻 Author
 
----
+**Pranjali Sonkamble**
 
-## Tools & Technologies
-
-- **Excel** — data cleaning and feature creation
-- **Power BI** — data modeling, DAX measures, dashboard visualization
-- **Dataset:** UCI Online Retail dataset (UK-based online retailer, Dec 2010–Dec 2011)
-
----
-
-## Author
-
-Pranjali Sonkamble
+Focused on **Data Analytics, Business Intelligence, AI/ML, and practical data applications**.
