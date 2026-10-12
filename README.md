@@ -79,11 +79,15 @@ Raw data is not included because of size; the project is designed to be reproduc
 
 ---
 
-## Data Source & Licensing
+## 📄 Data Source & Licensing
 
-The project uses the **Online Retail** dataset from the UCI Machine Learning Repository: [Online Retail dataset](https://doi.org/10.24432/C5BW33). Cite it as: Chen, D. (2015). *Online Retail* [Dataset]. UCI Machine Learning Repository. The dataset is licensed under **CC BY 4.0**; attribution is required when sharing or adapting the dataset.
+**Dataset:** Online Retail, UCI Machine Learning Repository, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-The MIT License in this repository applies only to original project code and documentation. It does not replace or supersede the dataset's CC BY 4.0 terms.
+> Chen, D. (2015). *Online Retail* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33
+
+The Power BI file (`powerbi/Business_Performance_Dashboard.pbix`) includes data derived from this dataset. Changes made in this project: cleaning, feature creation, and aggregation for the dashboard.
+
+**Code license:** Original work in this repository (report design, measures, documentation) is released under the [MIT License](LICENSE). The MIT License does not apply to the UCI dataset, which stays under CC BY 4.0.
 
 ## 👩‍💻 Author
 
