@@ -13,7 +13,7 @@ Provide a single analytical view to answer:
 
 ## 🧰 Tech Stack
 
-**Excel** · **Power BI** · **DAX** · **Data Cleaning** · **Data Visualization**
+**Power BI** · **DAX** · **Data Cleaning** · **Data Visualization**
 
 **Dataset:** UCI Online Retail — UK-based online retailer, December 2010–December 2011.
 
@@ -76,6 +76,14 @@ Raw data is not included because of size; the project is designed to be reproduc
 - Exclude non-product transaction types during modeling.
 - Add customer segmentation and retention analysis.
 - Add profitability analysis when cost data is available.
+
+---
+
+## Data Source & Licensing
+
+The project uses the **Online Retail** dataset from the UCI Machine Learning Repository: [Online Retail dataset](https://doi.org/10.24432/C5BW33). Cite it as: Chen, D. (2015). *Online Retail* [Dataset]. UCI Machine Learning Repository. The dataset is licensed under **CC BY 4.0**; attribution is required when sharing or adapting the dataset.
+
+The MIT License in this repository applies only to original project code and documentation. It does not replace or supersede the dataset's CC BY 4.0 terms.
 
 ## 👩‍💻 Author
 
