@@ -13,7 +13,7 @@ Provide a single analytical view to answer:
 
 ## 🧰 Tech Stack
 
-**Power BI** · **DAX** · **Python (pandas audit/cleaning script)** · **Data Visualization**
+**Power BI** · **DAX** · **Python (pandas data-audit script)** · **Data Visualization**
 
 **Dataset:** UCI Online Retail — UK-based online retailer, December 2010–December 2011.
 
@@ -22,7 +22,7 @@ Provide a single analytical view to answer:
 ```
 Raw Transaction Data
         ↓
-Python audit / cleaning (reproducible script)
+Python audit (reproducible script; does not modify source data)
         ↓
 Power BI Data Model
         ↓
@@ -66,7 +66,7 @@ A dashboard is only as reliable as the definitions and data behind its visuals. 
 
 1. Download the [UCI Online Retail dataset](https://doi.org/10.24432/C5BW33).
 2. Install the Python dependencies `pandas` and `openpyxl` (`pip install pandas openpyxl`).
-3. Run `python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs`. It reports signed sales, cancellation invoices, the `PAPER CRAFT, LITTLE BIRDIE` rows, extreme-value lines, gross and signed-net product rankings, and gross/net monthly sales by Year-Month. The source workbook is never modified.
+3. Run `python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs`. It audits signed sales, cancellation invoices, the `PAPER CRAFT, LITTLE BIRDIE` rows, extreme-value lines, gross and signed-net product rankings, and gross/net monthly sales by Year-Month. This script is an audit tool, not a data-cleaning pipeline: it never modifies the source workbook or produces a cleaned workbook.
 4. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop and point the model to your local dataset.
 5. Follow [Power BI repair steps](docs/POWER_BI_REPAIR_CHECKLIST.md): fix the page title, replace month-name-only axes with a sorted Year-Month key, make KPI names/formatting match their DAX definitions, and reconcile gross/net sales before publishing.
 
