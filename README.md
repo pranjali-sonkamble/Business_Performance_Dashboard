@@ -13,7 +13,7 @@ Provide a single analytical view to answer:
 
 ## 🧰 Tech Stack
 
-**Power BI** · **DAX** · **Data Cleaning** · **Data Visualization**
+**Power BI** · **DAX** · **Python (pandas audit/cleaning script)** · **Data Visualization**
 
 **Dataset:** UCI Online Retail — UK-based online retailer, December 2010–December 2011.
 
@@ -22,7 +22,7 @@ Provide a single analytical view to answer:
 ```
 Raw Transaction Data
         ↓
-Data Cleaning & Feature Creation
+Python audit / cleaning (reproducible script)
         ↓
 Power BI Data Model
         ↓
@@ -43,16 +43,16 @@ Business Insights
 
 ## 📌 Core KPIs
 
-- **Total Sales:** £10.67M
-- **Orders:** 21K
-- **Average Order Value:** £514.65
-- **Unique Products:** 4,063
+- **Total Sales:** £10.67M *(existing PBIX figure; not yet reconciled against cancellation handling in the source data)*
+- **Orders:** 21K *(existing PBIX figure; definition should be confirmed against distinct invoice numbers)*
+- **Average Order Value:** £514.65 *(existing PBIX figure; definition should be confirmed)*
+- **Products Sold:** 4,063 *(matches the card label; do not describe as unique products until the measure is verified)*
 
 ## 🔍 Key Findings
 
-- Monthly sales increased substantially through the analysis period, reaching approximately £1.5M in the final two months.
-- Shipping/manual adjustment entries such as **DOTCOM POSTAGE**, **Manual**, and **POSTAGE** can distort product rankings if treated as products.
-- **REGENCY CAKESTAND 3 TIER** was the highest genuine product by revenue in the analysis.
+- Monthly sales should be reviewed using a Year-Month key (for example, `2010-12`, `2011-12`) before stating month-specific totals. The month-name-only visual can combine December 2010 and December 2011.
+- Shipping/manual adjustment entries such as **DOTCOM POSTAGE**, **Manual**, and **POSTAGE** can distort product rankings if treated as products; the published product ranking should exclude them explicitly and document the rule.
+- **REGENCY CAKESTAND 3 TIER** was the highest product by revenue in the existing analysis; re-check the ranking after cancellation and non-merchandise handling is standardized.
 - **WHITE HANGING HEART T-LIGHT HOLDER** combined high order frequency with substantial revenue.
 - Among non-UK markets, the Netherlands and EIRE were the leading markets by sales in this analysis.
 
@@ -62,18 +62,19 @@ A dashboard is only as reliable as the definitions and data behind its visuals. 
 
 ## ▶️ Reproduce the Analysis
 
-1. Download the UCI Online Retail dataset.
-2. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop.
-3. Point the model to your local dataset.
-4. Refresh the model.
-5. Review the DAX-driven KPIs and visual analysis.
+1. Download the [UCI Online Retail dataset](https://doi.org/10.24432/C5BW33).
+2. Install the Python dependencies `pandas` and `openpyxl` (`pip install pandas openpyxl`).
+3. Run `python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs` to inspect cancellation invoices, the `PAPER CRAFT, LITTLE BIRDIE` lines, adjustment descriptions, and a Year-Month sales series. The script leaves the source file unchanged.
+4. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop and point the model to your local dataset.
+5. Apply and document the chosen cancellation and non-merchandise policy, use a proper Year-Month field, refresh the model, and reconcile KPI totals against the script output before publishing.
 
 Raw data is not included because of size; the project is designed to be reproducible from the public dataset.
 
 ## ⚠️ Limitations & Next Steps
 
+- Reconcile gross sales versus net sales, including cancellation/credit-note rows, before presenting Total Sales as final.
 - Use a proper Year-Month dimension rather than month name alone.
-- Exclude non-product transaction types during modeling.
+- Exclude non-product transaction types during product ranking, with an explicit documented list.
 - Add customer segmentation and retention analysis.
 - Add profitability analysis when cost data is available.
 
