@@ -62,9 +62,31 @@ def main() -> None:
     print(f"PAPER CRAFT, LITTLE BIRDIE rows: {int(birdie.sum()):,}")
     print(f"PAPER CRAFT, LITTLE BIRDIE line sales (signed): £{df.loc[birdie, 'LineSales'].sum():,.2f}")
     if birdie.any():
-        print("PAPER CRAFT, LITTLE BIRDIE invoice details:")
-        print(df.loc[birdie, ["InvoiceNo", "InvoiceDate", "Quantity", "UnitPrice", "LineSales"]]
-              .sort_values("LineSales", ascending=False).head(20).to_string(index=False))
+        birdie_rows = df.loc[birdie, [
+            "InvoiceNo", "InvoiceDate", "Quantity", "UnitPrice", "LineSales",
+            "IsCancellationInvoice",
+        ]].copy()
+        print("PAPER CRAFT, LITTLE BIRDIE invoice details (C-prefixed invoices are cancellation invoices):")
+        print(birdie_rows.sort_values("LineSales", ascending=False).head(20).to_string(index=False))
+        print("PAPER CRAFT, LITTLE BIRDIE grouped by invoice:")
+        print(birdie_rows.groupby(
+            ["InvoiceNo", "IsCancellationInvoice"], dropna=False
+        ).agg(
+            rows=("LineSales", "size"),
+            quantity=("Quantity", "sum"),
+            line_sales=("LineSales", "sum"),
+        ).sort_values("line_sales", ascending=False).head(20).to_string())
+
+    # Surface extreme lines for review rather than silently deleting them.
+    # A high-value row is not automatically erroneous.
+    extreme_lines = df.loc[
+        df["Quantity"].abs().ge(10_000) | df["LineSales"].abs().ge(10_000),
+        ["InvoiceNo", "InvoiceDate", "StockCode", "Description", "Quantity",
+         "UnitPrice", "LineSales", "IsCancellationInvoice"],
+    ].copy().sort_values("LineSales", key=lambda values: values.abs(), ascending=False)
+    print(f"\nExtreme lines requiring review (|quantity| >= 10,000 or |line sales| >= £10,000): {len(extreme_lines):,}")
+    if not extreme_lines.empty:
+        print(extreme_lines.head(30).to_string(index=False))
 
     # Common exploratory views. They are explicit variants, not an assertion that
     # one cleaning policy is correct for every business question.
@@ -90,6 +112,8 @@ def main() -> None:
         product_merch.to_csv(args.output_dir / "product_sales_excluding_adjustment_descriptions.csv", index=False)
         monthly.to_csv(args.output_dir / "monthly_sales_year_month.csv", index=False)
         df.loc[birdie].to_csv(args.output_dir / "paper_craft_little_birdie_rows.csv", index=False)
+        extreme_lines.to_csv(args.output_dir / "extreme_lines_for_review.csv", index=False)
+        df.loc[cancellation_rows].to_csv(args.output_dir / "cancellation_invoice_rows.csv", index=False)
         print(f"\nAudit CSVs written to: {args.output_dir.resolve()}")
 
 
