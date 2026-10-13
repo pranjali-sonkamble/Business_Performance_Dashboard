@@ -43,16 +43,18 @@ Business Insights
 
 ## 📌 Core KPIs
 
-- **Total Sales:** £10.67M *(existing PBIX figure; not yet reconciled against cancellation handling in the source data)*
-- **Orders:** 21K *(existing PBIX figure; definition should be confirmed against distinct invoice numbers)*
-- **Average Order Value:** £514.65 *(existing PBIX figure; definition should be confirmed)*
-- **Products Sold:** 4,063 *(matches the card label; do not describe as unique products until the measure is verified)*
+> **Validation status:** The figures below are the values currently displayed by the PBIX, not yet independently reconciled. Do not present them as verified business KPIs until the cancellation policy, DAX definitions, and source totals have been checked.
+- **Total Sales:** £10.67M *(current PBIX value; gross-versus-net treatment remains unverified)*
+- **Orders:** 21K *(current PBIX value; verify distinct invoice count and treatment of cancellation invoices)*
+- **Average Order Value:** £514.65 *(current PBIX value; verify as consistently defined Sales ÷ Orders)*
+- **Products Sold:** 4,063 *(current PBIX value; confirm whether this means distinct SKUs, descriptions, units, or transaction lines before renaming the card)*
 
 ## 🔍 Key Findings
 
 - Monthly sales should be reviewed using a Year-Month key (for example, `2010-12`, `2011-12`) before stating month-specific totals. The month-name-only visual can combine December 2010 and December 2011.
 - Shipping/manual adjustment entries such as **DOTCOM POSTAGE**, **Manual**, and **POSTAGE** can distort product rankings if treated as products; the published product ranking should exclude them explicitly and document the rule.
-- **REGENCY CAKESTAND 3 TIER** was the highest product by revenue in the existing analysis; re-check the ranking after cancellation and non-merchandise handling is standardized.
+- **REGENCY CAKESTAND 3 TIER** ranked highly in the existing analysis; treat the rank as provisional until signed cancellation lines and non-merchandise descriptions are handled consistently.
+- **PAPER CRAFT, LITTLE BIRDIE** has a known extreme-value line in this dataset (the £168,469.60 line associated with an unusually large quantity). The audit script now prints its invoice/cancellation status and flags extreme lines. Do not automatically delete the line or assume it was later cancelled; verify the source rows and document the chosen treatment.
 - **WHITE HANGING HEART T-LIGHT HOLDER** combined high order frequency with substantial revenue.
 - Among non-UK markets, the Netherlands and EIRE were the leading markets by sales in this analysis.
 
@@ -64,16 +66,17 @@ A dashboard is only as reliable as the definitions and data behind its visuals. 
 
 1. Download the [UCI Online Retail dataset](https://doi.org/10.24432/C5BW33).
 2. Install the Python dependencies `pandas` and `openpyxl` (`pip install pandas openpyxl`).
-3. Run `python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs` to inspect cancellation invoices, the `PAPER CRAFT, LITTLE BIRDIE` lines, adjustment descriptions, and a Year-Month sales series. The script leaves the source file unchanged.
+3. Run `python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs`. It reports signed sales, cancellation invoices, the `PAPER CRAFT, LITTLE BIRDIE` rows, extreme-value lines, gross and signed-net product rankings, and gross/net monthly sales by Year-Month. The source workbook is never modified.
 4. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop and point the model to your local dataset.
-5. Apply and document the chosen cancellation and non-merchandise policy, use a proper Year-Month field, refresh the model, and reconcile KPI totals against the script output before publishing.
+5. Follow [Power BI repair steps](docs/POWER_BI_REPAIR_CHECKLIST.md): fix the page title, replace month-name-only axes with a sorted Year-Month key, make KPI names/formatting match their DAX definitions, and reconcile gross/net sales before publishing.
 
 Raw data is not included because of size; the project is designed to be reproducible from the public dataset.
 
 ## ⚠️ Limitations & Next Steps
 
-- Reconcile gross sales versus net sales, including cancellation/credit-note rows, before presenting Total Sales as final.
-- Use a proper Year-Month dimension rather than month name alone.
+- **Dashboard file still requires manual Power BI Desktop edits.** The repository README and audit script are corrected, but the PBIX visuals/model are not represented as fixed until the updated PBIX is saved and committed.
+- Reconcile gross sales versus signed net sales, including cancellation/credit-note rows, before presenting Total Sales as final.
+- Use a proper Year-Month dimension rather than month name alone; December 2010 and December 2011 must remain separate.
 - Exclude non-product transaction types during product ranking, with an explicit documented list.
 - Add customer segmentation and retention analysis.
 - Add profitability analysis when cost data is available.
