@@ -39,6 +39,14 @@ def main() -> None:
 
     df["InvoiceNo"] = df["InvoiceNo"].astype("string").str.strip()
     df["Description"] = df["Description"].astype("string").str.strip()
+    # Canonicalize spaces around commas so variants like "PAPER CRAFT , LITTLE BIRDIE"
+    # still match the same product description.
+    description_norm = (
+        df["Description"].str.upper()
+        .str.replace(r"\\s*,\\s*", ", ", regex=True)
+        .str.replace(r"\\s+", " ", regex=True)
+        .str.strip()
+    )
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
     df["Quantity"] = pd.to_numeric(df["Quantity"], errors="coerce")
     df["UnitPrice"] = pd.to_numeric(df["UnitPrice"], errors="coerce")
@@ -48,8 +56,8 @@ def main() -> None:
 
     cancellation_rows = df["IsCancellationInvoice"]
     positive_sales = df["Quantity"].gt(0) & df["UnitPrice"].ge(0)
-    excluded_desc = df["Description"].str.upper().isin(NON_MERCHANDISE)
-    birdie = df["Description"].str.upper().eq("PAPER CRAFT, LITTLE BIRDIE")
+    excluded_desc = description_norm.isin(NON_MERCHANDISE)
+    birdie = description_norm.eq("PAPER CRAFT, LITTLE BIRDIE")
 
     print("=== Dataset audit ===")
     print(f"Rows: {len(df):,}")
