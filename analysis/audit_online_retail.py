@@ -88,29 +88,43 @@ def main() -> None:
     if not extreme_lines.empty:
         print(extreme_lines.head(30).to_string(index=False))
 
-    # Common exploratory views. They are explicit variants, not an assertion that
-    # one cleaning policy is correct for every business question.
-    base = df.loc[~cancellation_rows & positive_sales].copy()
-    product_all = (base.groupby("Description", dropna=False)["LineSales"]
-                   .sum().sort_values(ascending=False).rename("Sales").reset_index())
-    product_merch = (base.loc[~excluded_desc]
-                     .groupby("Description", dropna=False)["LineSales"]
-                     .sum().sort_values(ascending=False).rename("Sales").reset_index())
-    monthly = (base.groupby("YearMonth", dropna=False)["LineSales"]
-               .sum().rename("Sales").reset_index().sort_values("YearMonth"))
+    # Gross sales excludes cancellation invoices and nonpositive lines.
+    # Net sales retains signed cancellation lines so they can offset original sales.
+    # These are different business definitions; neither should be silently labelled
+    # simply "Sales" without documenting the selected policy.
+    gross_base = df.loc[~cancellation_rows & positive_sales].copy()
+    net_base = df.loc[~excluded_desc].copy()
 
-    print("\nTop 15 descriptions after excluding cancellation invoices and nonpositive lines:")
-    print(product_all.head(15).to_string(index=False))
-    print("\nTop 15 after also excluding named non-merchandise descriptions:")
-    print(product_merch.head(15).to_string(index=False))
-    print("\nMonthly sales using Year-Month key:")
-    print(monthly.to_string(index=False))
+    product_gross_all = (gross_base.groupby("Description", dropna=False)["LineSales"]
+                         .sum().sort_values(ascending=False).rename("GrossSales").reset_index())
+    product_gross_merch = (gross_base.loc[~excluded_desc]
+                           .groupby("Description", dropna=False)["LineSales"]
+                           .sum().sort_values(ascending=False).rename("GrossSales").reset_index())
+    product_net_merch = (net_base.groupby("Description", dropna=False)["LineSales"]
+                         .sum().sort_values(ascending=False).rename("NetSales").reset_index())
+    monthly_gross = (gross_base.groupby("YearMonth", dropna=False)["LineSales"]
+                     .sum().rename("GrossSales").reset_index().sort_values("YearMonth"))
+    monthly_net = (df.groupby("YearMonth", dropna=False)["LineSales"]
+                   .sum().rename("NetSales").reset_index().sort_values("YearMonth"))
+
+    print("\nTop 15 descriptions by gross sales (cancellation invoices/nonpositive lines excluded):")
+    print(product_gross_all.head(15).to_string(index=False))
+    print("\nTop 15 merchandise descriptions by gross sales (named adjustments excluded):")
+    print(product_gross_merch.head(15).to_string(index=False))
+    print("\nTop 15 merchandise descriptions by signed net sales (cancellation rows retained):")
+    print(product_net_merch.head(15).to_string(index=False))
+    print("\nMonthly gross sales using Year-Month key:")
+    print(monthly_gross.to_string(index=False))
+    print("\nMonthly signed net sales using Year-Month key:")
+    print(monthly_net.to_string(index=False))
 
     if args.output_dir:
         args.output_dir.mkdir(parents=True, exist_ok=True)
-        product_all.to_csv(args.output_dir / "product_sales_including_adjustment_descriptions.csv", index=False)
-        product_merch.to_csv(args.output_dir / "product_sales_excluding_adjustment_descriptions.csv", index=False)
-        monthly.to_csv(args.output_dir / "monthly_sales_year_month.csv", index=False)
+        product_gross_all.to_csv(args.output_dir / "product_gross_sales_including_adjustment_descriptions.csv", index=False)
+        product_gross_merch.to_csv(args.output_dir / "product_gross_sales_merchandise_only.csv", index=False)
+        product_net_merch.to_csv(args.output_dir / "product_net_sales_merchandise_only.csv", index=False)
+        monthly_gross.to_csv(args.output_dir / "monthly_gross_sales_year_month.csv", index=False)
+        monthly_net.to_csv(args.output_dir / "monthly_net_sales_year_month.csv", index=False)
         df.loc[birdie].to_csv(args.output_dir / "paper_craft_little_birdie_rows.csv", index=False)
         extreme_lines.to_csv(args.output_dir / "extreme_lines_for_review.csv", index=False)
         df.loc[cancellation_rows].to_csv(args.output_dir / "cancellation_invoice_rows.csv", index=False)
