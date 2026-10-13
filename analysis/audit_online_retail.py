@@ -43,8 +43,8 @@ def main() -> None:
     # still match the same product description.
     description_norm = (
         df["Description"].str.upper()
-        .str.replace(r"\\s*,\\s*", ", ", regex=True)
-        .str.replace(r"\\s+", " ", regex=True)
+        .str.replace(r"\s*,\s*", ", ", regex=True)
+        .str.replace(r"\s+", " ", regex=True)
         .str.strip()
     )
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
