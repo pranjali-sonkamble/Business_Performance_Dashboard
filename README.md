@@ -54,7 +54,7 @@ Business Insights
 - Monthly sales should be reviewed using a Year-Month key (for example, `2010-12`, `2011-12`) before stating month-specific totals. The month-name-only visual can combine December 2010 and December 2011.
 - Shipping/manual adjustment entries such as **DOTCOM POSTAGE**, **Manual**, and **POSTAGE** can distort product rankings if treated as products; the published product ranking should exclude them explicitly and document the rule.
 - **REGENCY CAKESTAND 3 TIER** ranked highly in the existing analysis; treat the rank as provisional until signed cancellation lines and non-merchandise descriptions are handled consistently.
-- **PAPER CRAFT, LITTLE BIRDIE** has a known extreme-value line in this dataset (the £168,469.60 line associated with an unusually large quantity). The audit script now prints its invoice/cancellation status and flags extreme lines. Do not automatically delete the line or assume it was later cancelled; verify the source rows and document the chosen treatment.
+- **PAPER CRAFT, LITTLE BIRDIE** contains a confirmed extreme-value transaction: invoice `581483` records 80,995 units at £2.08 (£168,469.60). The source also contains reversal/cancellation invoice `C581484` for -80,995 units at £2.08 on 2011-12-09 09:27, associated with the same customer and description (the raw source varies punctuation spacing). The positive line is therefore offset by a later cancellation in signed net sales, but a gross-sales measure that drops cancellation invoices can still count the £168,469.60 original. The audit script normalizes description punctuation and prints both sides; the PBIX must apply an explicit, consistent policy.
 - **WHITE HANGING HEART T-LIGHT HOLDER** combined high order frequency with substantial revenue.
 - Among non-UK markets, the Netherlands and EIRE were the leading markets by sales in this analysis.
 
@@ -75,7 +75,7 @@ Raw data is not included because of size; the project is designed to be reproduc
 ## ⚠️ Limitations & Next Steps
 
 - **Dashboard file still requires manual Power BI Desktop edits.** The repository README and audit script are corrected, but the PBIX visuals/model are not represented as fixed until the updated PBIX is saved and committed.
-- Reconcile gross sales versus signed net sales, including cancellation/credit-note rows, before presenting Total Sales as final.
+- Reconcile gross sales versus signed net sales, including the confirmed `581483` / `C581484` reversal, before presenting Total Sales as final.
 - Use a proper Year-Month dimension rather than month name alone; December 2010 and December 2011 must remain separate.
 - Exclude non-product transaction types during product ranking, with an explicit documented list.
 - Add customer segmentation and retention analysis.
