@@ -44,7 +44,7 @@ Business Insights
 ## 📌 Core KPIs
 
 > **Validation status:** The figures below are the values currently displayed by the PBIX, not yet independently reconciled. Do not present them as verified business KPIs until the cancellation policy, DAX definitions, and source totals have been checked.
-- **Total Sales:** £10.67M *(current PBIX value; gross-versus-net treatment remains unverified)*
+- **Total Sales:** £10.67M *(current PBIX value; this is consistent with a commonly reported gross-positive-line calculation, but the exact PBIX measure is not inspectable from the repository connector. If the measure excludes C-prefixed cancellation invoices but retains positive original lines, it still includes invoice `581483` (£168,469.60) even though that order was cancelled 12 minutes later. Do not label this as reconciled net sales.)*
 - **Orders:** 21K *(current PBIX value; verify distinct invoice count and treatment of cancellation invoices)*
 - **Average Order Value:** £514.65 *(current PBIX value; verify as consistently defined Sales ÷ Orders)*
 - **Products Sold:** 4,063 *(current PBIX value; confirm whether this means distinct SKUs, descriptions, units, or transaction lines before renaming the card)*
@@ -75,7 +75,7 @@ Raw data is not included because of size; the project is designed to be reproduc
 ## ⚠️ Limitations & Next Steps
 
 - **Dashboard file still requires manual Power BI Desktop edits.** The repository README and audit script are corrected, but the PBIX visuals/model are not represented as fixed until the updated PBIX is saved and committed.
-- Reconcile gross sales versus signed net sales, including the confirmed `581483` / `C581484` reversal, before presenting Total Sales as final.
+- Reconcile gross sales versus signed net sales, including the confirmed `581483` / `C581484` reversal, before presenting Total Sales as final. A simple `InvoiceNo` starts-with-`C` filter is not enough to remove the original cancelled sale from a gross-sales calculation.
 - Use a proper Year-Month dimension rather than month name alone; December 2010 and December 2011 must remain separate.
 - Exclude non-product transaction types during product ranking, with an explicit documented list.
 - Add customer segmentation and retention analysis.
