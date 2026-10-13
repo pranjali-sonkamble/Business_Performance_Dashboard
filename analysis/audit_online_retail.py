@@ -104,8 +104,8 @@ def main() -> None:
                          .sum().sort_values(ascending=False).rename("NetSales").reset_index())
     monthly_gross = (gross_base.groupby("YearMonth", dropna=False)["LineSales"]
                      .sum().rename("GrossSales").reset_index().sort_values("YearMonth"))
-    monthly_net = (df.groupby("YearMonth", dropna=False)["LineSales"]
-                   .sum().rename("NetSales").reset_index().sort_values("YearMonth"))
+    monthly_net = (net_base.groupby("YearMonth", dropna=False)["LineSales"]
+                   .sum().rename("NetMerchandiseSales").reset_index().sort_values("YearMonth"))
 
     print("\nTop 15 descriptions by gross sales (cancellation invoices/nonpositive lines excluded):")
     print(product_gross_all.head(15).to_string(index=False))
@@ -115,7 +115,7 @@ def main() -> None:
     print(product_net_merch.head(15).to_string(index=False))
     print("\nMonthly gross sales using Year-Month key:")
     print(monthly_gross.to_string(index=False))
-    print("\nMonthly signed net sales using Year-Month key:")
+    print("\nMonthly signed net merchandise sales using Year-Month key:")
     print(monthly_net.to_string(index=False))
 
     if args.output_dir:
@@ -124,7 +124,7 @@ def main() -> None:
         product_gross_merch.to_csv(args.output_dir / "product_gross_sales_merchandise_only.csv", index=False)
         product_net_merch.to_csv(args.output_dir / "product_net_sales_merchandise_only.csv", index=False)
         monthly_gross.to_csv(args.output_dir / "monthly_gross_sales_year_month.csv", index=False)
-        monthly_net.to_csv(args.output_dir / "monthly_net_sales_year_month.csv", index=False)
+        monthly_net.to_csv(args.output_dir / "monthly_net_merchandise_sales_year_month.csv", index=False)
         df.loc[birdie].to_csv(args.output_dir / "paper_craft_little_birdie_rows.csv", index=False)
         extreme_lines.to_csv(args.output_dir / "extreme_lines_for_review.csv", index=False)
         df.loc[cancellation_rows].to_csv(args.output_dir / "cancellation_invoice_rows.csv", index=False)
