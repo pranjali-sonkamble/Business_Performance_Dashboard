@@ -43,11 +43,7 @@ Business Insights
 
 ## 📌 Core KPIs
 
-> **Validation status:** The figures below are the values currently displayed by the PBIX, not yet independently reconciled. Do not present them as verified business KPIs until the cancellation policy, DAX definitions, and source totals have been checked.
-- **Total Sales:** £10.67M *(current PBIX value; this is consistent with a commonly reported gross-positive-line calculation, but the exact PBIX measure is not inspectable from the repository connector. If the measure excludes C-prefixed cancellation invoices but retains positive original lines, it still includes invoice `581483` (£168,469.60) even though that order was cancelled 12 minutes later. Do not label this as reconciled net sales.)*
-- **Orders:** 21K *(current PBIX value; verify distinct invoice count and treatment of cancellation invoices)*
-- **Average Order Value:** £514.65 *(current PBIX value; verify as consistently defined Sales ÷ Orders)*
-- **Products Sold:** 4,063 *(current PBIX value; confirm whether this means distinct SKUs, descriptions, units, or transaction lines before renaming the card)*
+The dashboard reports four headline KPIs: **Total Sales**, **Orders**, **Average Order Value** and **Products Sold**. Values shown in the current PBIX are being reconciled against signed net sales (see [Repair Status](#️-repair-status)); the Python audit script reports gross and signed-net figures side by side so the definitions are explicit.
 
 ## 🔍 Key Findings
 
@@ -68,18 +64,26 @@ A dashboard is only as reliable as the definitions and data behind its visuals. 
 2. Install the Python dependencies `pandas` and `openpyxl` (`pip install pandas openpyxl`).
 3. Run `python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs`. It reports signed sales, cancellation invoices, the `PAPER CRAFT, LITTLE BIRDIE` rows, extreme-value lines, gross and signed-net product rankings, and gross/net monthly sales by Year-Month. The source workbook is never modified.
 4. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop and point the model to your local dataset.
-5. Follow [Power BI repair steps](docs/POWER_BI_REPAIR_CHECKLIST.md): fix the page title, replace month-name-only axes with a sorted Year-Month key, make KPI names/formatting match their DAX definitions, and reconcile gross/net sales before publishing.
+5. See [Power BI repair steps](docs/POWER_BI_REPAIR_CHECKLIST.md) for the Year-Month axis, KPI definitions and gross/net reconciliation.
 
 Raw data is not included because of size; the project is designed to be reproducible from the public dataset.
 
-## ⚠️ Limitations & Next Steps
+## 🛠️ Repair Status
 
-- **Dashboard file still requires manual Power BI Desktop edits.** The repository README and audit script are corrected, but the PBIX visuals/model are not represented as fixed until the updated PBIX is saved and committed.
-- Reconcile gross sales versus signed net sales, including the confirmed `581483` / `C581484` reversal, before presenting Total Sales as final. A simple `InvoiceNo` starts-with-`C` filter is not enough to remove the original cancelled sale from a gross-sales calculation.
-- Use a proper Year-Month dimension rather than month name alone; December 2010 and December 2011 must remain separate.
-- Exclude non-product transaction types during product ranking, with an explicit documented list.
-- Add customer segmentation and retention analysis.
-- Add profitability analysis when cost data is available.
+The dashboard is being refined in five steps. Boxes are ticked only when a step is finished and committed.
+
+- [ ] **Step 1 — Prepare the files:** locate the PBIX, source workbook and audit script; make a backup.
+- [ ] **Step 2 — Audit the source data:** reconcile gross sales, signed net sales, cancellations, orders and the extreme-value transaction (`581483` / `C581484`).
+- [ ] **Step 3 — Repair the date axis:** use a chronological Year-Month field so December 2010 and December 2011 stay separate.
+- [ ] **Step 4 — Correct KPIs and product rankings:** validate DAX measures, currency formats, order counts and merchandise exclusions.
+- [ ] **Step 5 — Validate, save and publish:** refresh the report, verify visuals, update screenshots and commit the corrected PBIX.
+
+Details are in the [Power BI repair checklist](docs/POWER_BI_REPAIR_CHECKLIST.md).
+
+## 🔭 Next Steps
+
+- Customer segmentation and retention analysis.
+- Profitability analysis when cost data is available.
 
 ---
 
