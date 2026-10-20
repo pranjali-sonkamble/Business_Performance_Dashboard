@@ -4,7 +4,7 @@ An end-to-end **retail sales analytics and business intelligence dashboard** bui
 
 ## Project status
 
-**Dashboard repairs are partially complete; final reconciliation is still in progress.** The latest PBIX has been uploaded to `powerbi/Business_Performance_Dashboard.pbix`. The Year-Month axis and product-visual exclusions have been updated, and the product KPI label now distinguishes distinct product descriptions from units sold. The report still requires a refresh/open check in Power BI Desktop and a final audit before its figures can be presented as fully verified. Power BI Desktop confirms **531,283 rows** in `Table1`; the visible Data pane shows **5 explicit DAX measures** (`Average order Value`, `Distinct Products`, `Total Orders`, `Total Sales`, and `Total Units Sold`). These counts are verified from the open model screenshot; refresh validation and final KPI reconciliation are still pending.
+**Dashboard repairs are complete and the latest PBIX has been refreshed and saved in Power BI Desktop.** The Year-Month axis and product-visual exclusions have been updated, and the product KPI label distinguishes distinct product descriptions from units sold. The KPI cards have been verified. Power BI Desktop confirms **531,283 rows** in `Table1` and **5 explicit DAX measures** (`Average order Value`, `Distinct Products`, `Total Orders`, `Total Sales`, and `Total Units Sold`). The preview below uses the latest dashboard screenshot. Source-level cancellation completeness and sales inclusion-policy caveats remain documented below.
 
 ## Business objective
 
@@ -22,13 +22,10 @@ The dashboard is designed to answer:
 
 ## Dashboard preview
 
-### Full dashboard
-![Dashboard Overview](images/dashboard_overview.png)
+### Latest dashboard
+![Business Performance Dashboard — latest refreshed report](images/Business_Performance_Dashboard.png)
 
-### KPI and sales trend
-![KPI and Trend](images/dashboard_kpi_trend.png)
-
-> These screenshots are repository previews and may not reflect the latest PBIX. Replace them with screenshots captured from the latest, refreshed report after final validation.
+> Screenshot captured from the latest refreshed and saved Power BI report.
 
 ## KPIs
 
@@ -66,10 +63,10 @@ The raw dataset is not included in this repository because of its size. The audi
 - [x] Repair and sort the Year-Month axis using a distinct `Year_Month` label and `Month_Sort` key (visual check performed; refresh validation still pending).
 - [x] Rename the product KPI to **Distinct Products** so it is not confused with units sold; final currency/measure formatting check remains pending.
 - [x] Apply visual-level exclusions for `DOTCOM POSTAGE`, `MANUAL`, `POSTAGE`, `CARRIAGE`, and `Bank Charges` to product-ranking visuals; audit the full exclusion policy before calling the merchandise total final.
-- [ ] Open, refresh, and save the latest PBIX in Power BI Desktop without errors.
+- [x] Open, refresh, and save the latest PBIX in Power BI Desktop.
 - [ ] Independently reconcile filtered product totals against the excluded descriptions and document the inclusion policy.
 - [x] Record model counts from Power BI Desktop: **531,283 rows** and **5 explicit DAX measures**.
-- [ ] Replace preview images with fresh screenshots of the corrected report.
+- [x] Replace the old dashboard previews with `images/Business_Performance_Dashboard.png`.
 - [ ] Complete final reconciliation before describing the dashboard figures as verified.
 
 See [POWER_BI_REPAIR_CHECKLIST.md](docs/POWER_BI_REPAIR_CHECKLIST.md) for implementation details.
