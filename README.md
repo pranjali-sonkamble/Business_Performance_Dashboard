@@ -4,7 +4,7 @@ An end-to-end **retail sales analytics and business intelligence dashboard** bui
 
 ## Project status
 
-**Dashboard repair and metric reconciliation are in progress.** The current Power BI file must be refreshed and validated in Power BI Desktop before the metrics below can be called final. Row count and DAX measure count are intentionally not stated until measured from the source and model.
+**Dashboard repairs are partially complete; final reconciliation is still in progress.** The latest PBIX has been uploaded to `powerbi/Business_Performance_Dashboard.pbix`. The Year-Month axis and product-visual exclusions have been updated, and the product KPI label now distinguishes distinct product descriptions from units sold. The report still requires a refresh/open check in Power BI Desktop and a final audit before its figures can be presented as fully verified. Row count and explicit DAX measure count are intentionally omitted until measured from the source and model.
 
 ## Business objective
 
@@ -28,11 +28,11 @@ The dashboard is designed to answer:
 ### KPI and sales trend
 ![KPI and Trend](images/dashboard_kpi_trend.png)
 
-> These screenshots are the current repository previews; replace them with screenshots captured from the corrected, refreshed PBIX after repairs are complete.
+> These screenshots are repository previews and may not reflect the latest PBIX. Replace them with screenshots captured from the latest, refreshed report after final validation.
 
 ## KPIs
 
-The report is intended to show **Sales**, **Orders**, **Average Order Value**, and a correctly defined product/quantity metric. The actual values and measure definitions are still being reconciled. Do not treat the existing Power BI card values as verified until they match the independent audit and the selected business definitions.
+The report shows **Total Sales**, **Total Orders**, **Average Order Value**, and **Distinct Products** (distinct product descriptions, not total units sold). In the current cleaned workbook, the reported checks so far are: sales sum **£10,666,684.54** (displayed as £10.67M), **20,726** distinct invoice IDs (displayed as 21K), AOV **£514.65**, and **4,063** distinct descriptions. These are preliminary source/model checks, not final certified KPIs: the cleaned workbook contains no invoice IDs beginning with `C` and no negative quantity/sales rows, so cancellation completeness and the business definition of net sales remain unverified. Reconcile the figures against the original dataset and the refreshed PBIX before describing them as final.
 
 ## Data-quality and interpretation notes
 
@@ -63,12 +63,14 @@ The raw dataset is not included in this repository because of its size. The audi
 - [ ] Verify source/model row counts and document the counting stage.
 - [ ] Count explicit DAX measures from the actual Power BI model.
 - [ ] Reconcile sales definitions, cancellation handling, order counts and AOV.
-- [ ] Repair and sort the Year-Month axis.
-- [ ] Correct KPI labels and currency formatting.
-- [ ] Apply documented non-merchandise exclusions to product rankings.
-- [ ] Refresh and save the PBIX in Power BI Desktop.
+- [x] Repair and sort the Year-Month axis using a distinct `Year_Month` label and `Month_Sort` key (visual check performed; refresh validation still pending).
+- [x] Rename the product KPI to **Distinct Products** so it is not confused with units sold; final currency/measure formatting check remains pending.
+- [x] Apply visual-level exclusions for `DOTCOM POSTAGE`, `MANUAL`, `POSTAGE`, `CARRIAGE`, and `Bank Charges` to product-ranking visuals; audit the full exclusion policy before calling the merchandise total final.
+- [ ] Open, refresh, and save the latest PBIX in Power BI Desktop without errors.
+- [ ] Independently reconcile filtered product totals against the excluded descriptions and document the inclusion policy.
+- [ ] Verify source/model row counts and count explicit DAX measures.
 - [ ] Replace preview images with fresh screenshots of the corrected report.
-- [ ] Commit the reconciled PBIX, screenshots and verified figures.
+- [ ] Complete final reconciliation before describing the dashboard figures as verified.
 
 See [POWER_BI_REPAIR_CHECKLIST.md](docs/POWER_BI_REPAIR_CHECKLIST.md) for implementation details.
 
