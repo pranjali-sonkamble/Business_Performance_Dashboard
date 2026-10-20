@@ -1,119 +1,127 @@
 # Power BI repair checklist
 
-This file records the required repairs for `powerbi/Business_Performance_Dashboard.pbix`. The README and Python audit script have been updated, but these visual/model changes must be made in Power BI Desktop and the saved PBIX committed before the dashboard itself can be described as fixed.
+This checklist distinguishes fixes that can be prepared in documentation from fixes that require Power BI Desktop and the source workbook. Do not mark the dashboard as corrected until the saved PBIX and refreshed screenshots are committed.
 
-## 1. Correct the page title
+## 0. Create a working copy
 
-- Open `powerbi/Business_Performance_Dashboard.pbix`.
-- Change the visible page title from **Bussiness_Performance_Dashboard** to **Business Performance Dashboard**.
-- Rename the report page in the page tab too, if it carries the typo.
+1. Pull the latest `main` branch.
+2. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop.
+3. Use **File → Save As** to create a backup copy before editing.
+4. Obtain the official UCI Online Retail workbook from the dataset link in the README and record the downloaded filename/date.
+5. In Power Query, inspect the source columns and types. Keep a single verified invoice timestamp field and do not assume similarly named date fields are identical.
 
-## 2. Use one date-only key and a Year-Month axis
+## 1. Dataset facts and model inventory
 
-The current model appears to expose duplicate date fields (`Invoice_Date` and `InvoiceDate`). Inspect their source and data types before removing either; keep one canonical date field and avoid using both interchangeably.
+Record these from the refreshed model before changing measures:
+- Source data rows loaded (exclude the column-header row).
+- Model tables and columns.
+- Total DAX measures (explicit measures only; do not count calculated columns as measures).
+- Calculated columns, relationships, and any Power Query filtering.
+- Min/max invoice date, nulls in key fields, and duplicate-row checks.
 
-1. In `Table1`, create a date-only column from the canonical invoice timestamp:
-   ```DAX
-   InvoiceDateOnly =
-       DATE(
-           YEAR(Table1[InvoiceDate]),
-           MONTH(Table1[InvoiceDate]),
-           DAY(Table1[InvoiceDate])
-       )
-   ```
-   Replace `InvoiceDate` above with the verified canonical field if needed.
-2. Create a calendar table:
-   ```DAX
-   Calendar =
-       CALENDAR(
-           MIN(Table1[InvoiceDateOnly]),
-           MAX(Table1[InvoiceDateOnly])
-       )
-   ```
-3. Add these calculated columns to `Calendar`:
-   ```DAX
-   YearMonth = FORMAT(Calendar[Date], "yyyy-MM")
-   YearMonthSort = YEAR(Calendar[Date]) * 100 + MONTH(Calendar[Date])
-   MonthName = FORMAT(Calendar[Date], "MMM")
-   ```
-4. Sort `Calendar[YearMonth]` by `Calendar[YearMonthSort]`; mark `Calendar` as the date table using `Calendar[Date]`.
-5. Create a one-to-many relationship from `Calendar[Date]` to `Table1[InvoiceDateOnly]`.
-6. Put `Calendar[YearMonth]` on the monthly trend X-axis. Do not use month name alone: December 2010 and December 2011 must be separate points.
-7. Check whether the chart is displaying gross or net sales and name its title/axis accordingly.
+The row count should be measured against the same stage used by the report: raw worksheet rows versus rows remaining after Power Query filters are not necessarily equal. Document which count is reported.
 
-If the existing model already has a valid calendar table, reuse and repair it rather than creating a duplicate.
+## 2. Repair date granularity and sorting
 
-## 3. Define cancellation and sales policy before reconciling KPIs
+Prefer an existing valid calendar table if present; do not create duplicates.
 
-Add a cancellation flag based on the UCI convention that cancellation invoice numbers start with `C`:
+If the fact table is `Table1` and its verified timestamp column is `InvoiceDate`, add a date-only column:
 
 ```DAX
-IsCancellationInvoice =
-    LEFT(UPPER(TRIM(Table1[InvoiceNo])), 1) = "C"
+InvoiceDateOnly =
+DATE(
+    YEAR(Table1[InvoiceDate]),
+    MONTH(Table1[InvoiceDate]),
+    DAY(Table1[InvoiceDate])
+)
 ```
 
-Add a signed line value:
+Create a calendar table only if one does not already exist:
+
+```DAX
+Calendar =
+CALENDAR(
+    MIN(Table1[InvoiceDateOnly]),
+    MAX(Table1[InvoiceDateOnly])
+)
+```
+
+Add to Calendar:
+
+```DAX
+YearMonth = FORMAT(Calendar[Date], "yyyy-MM")
+YearMonthSort = YEAR(Calendar[Date]) * 100 + MONTH(Calendar[Date])
+MonthName = FORMAT(Calendar[Date], "MMM")
+```
+
+Then:
+1. Sort `Calendar[YearMonth]` by `Calendar[YearMonthSort]`.
+2. Mark Calendar as the date table using `Calendar[Date]`.
+3. Create/verify a one-to-many relationship from `Calendar[Date]` to `Table1[InvoiceDateOnly]`.
+4. Use `Calendar[YearMonth]` on the monthly trend axis—not month name alone.
+5. Confirm December 2010 and December 2011 display as distinct periods.
+
+## 3. Establish sales definitions before fixing cards
+
+Create/verify these base fields (replace column names only after confirming the actual model schema):
 
 ```DAX
 LineSales = Table1[Quantity] * Table1[UnitPrice]
+
+IsCancellationInvoice =
+LEFT(UPPER(TRIM(Table1[InvoiceNo])), 1) = "C"
 ```
 
-The following are different definitions and must not be conflated:
+Document the chosen KPI policy:
+- **Gross merchandise sales:** positive quantity, non-cancellation invoice lines, excluding documented non-merchandise descriptions.
+- **Signed net sales:** signed line values, retaining credit/cancellation rows so they can offset original sales; state whether adjustments/non-merchandise lines are included.
+- **Orders:** distinct invoices under an explicit cancellation policy.
+- **Average order value:** the selected sales measure divided by a compatible order count.
+- **Products sold:** rename to **Distinct Products** if it counts distinct products/descriptions; use **Units Sold** if it sums quantities.
 
-- **Signed net sales:** sum signed line values, retaining negative cancellation/credit-note rows so they can offset sales.
-- **Gross merchandise sales:** sum positive-quantity, non-cancellation lines for merchandise only.
-- **Orders:** distinct invoice numbers under a documented cancellation policy.
-- **Average order value:** the chosen sales measure divided by the compatible order count.
+Do not remove every cancellation invoice from signed net sales; doing so can remove the credit while retaining the original transaction. Do not silently delete the high-value PAPER CRAFT transaction. Inspect invoice 581483 and cancellation invoice C581484 in the source, verify their descriptions and quantities, then document the treatment.
 
-Do not calculate “net sales” by simply deleting every cancellation invoice: that can remove the credit while retaining the original sale. Conversely, do not assume every negative row is a cancellation without inspecting the source. The Python script prints the signed total and cancellation details for reconciliation.
+For product ranking visuals, review and consistently exclude non-merchandise descriptions including DOTCOM POSTAGE, MANUAL, POSTAGE, BANK CHARGES, CARRIAGE, DISCOUNT, AMAZON FEE, CRUK COMMISSION, POSTAGE CHARGES, and SAMPLES. Do not automatically apply this product-ranking exclusion to every financial KPI.
 
-## 4. Exclude non-merchandise descriptions from product rankings
+## 4. Format and label visuals
 
-At minimum, review these adjustment/shipping descriptions before publishing product rankings:
+- Correct the report/page title to **Business Performance Dashboard**.
+- Label the sales card to match its definition: **Gross Merchandise Sales** or **Signed Net Sales**, not a vague Total Sales if its meaning is ambiguous.
+- Format all currency measures as GBP (£), with consistent decimal/display units.
+- Verify KPI labels and DAX expressions agree.
+- Give the monthly trend a clear title that indicates gross or net sales.
+- Add a tooltip/note to product rankings describing merchandise exclusions.
+- Hide editing panes and refresh screenshots only after saving and refreshing the PBIX.
 
-- DOTCOM POSTAGE
-- MANUAL
-- POSTAGE
-- BANK CHARGES
-- CARRIAGE
-- DISCOUNT
-- AMAZON FEE
-- CRUK COMMISSION
-- POSTAGE CHARGES
-- SAMPLES
+## 5. Verify the figures
 
-Apply a consistent exclusion rule to product-ranking visuals and label the rule in a tooltip or note. Do not apply it blindly to every financial KPI; postage/discounts may still matter to a broader revenue or adjustment analysis.
+Run the reproducible audit script from the repository root:
 
-## 5. Investigate the PAPER CRAFT, LITTLE BIRDIE outlier
+```bash
+python -m pip install pandas openpyxl
+python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs
+```
 
-- Run the Python audit script and inspect `outputs/paper_craft_little_birdie_rows.csv`, `outputs/extreme_lines_for_review.csv`, and `outputs/cancellation_invoice_rows.csv`.
-- Confirm the invoice number, quantity, line value, and whether the row is actually on a cancellation invoice.
-- Do not automatically delete the £168,469.60 line or assert that it was later cancelled without evidence in the source rows.
-- If the line is excluded as an anomaly, document the business rule and show its effect on the KPI totals and product ranking.
+Save the console output and outputs CSVs locally; do not commit the full raw dataset. Compare the dataset row count and selected sales definitions against Power BI after applying equivalent filters and policies.
 
-## 6. Fix KPI names and number formats
+Publish figures only after independently reconciling:
+- source row count and model row count;
+- explicit DAX measure count;
+- sales total(s) and cancellation treatment;
+- invoice/order count;
+- average order value;
+- distinct product or unit count;
+- monthly totals using Year-Month keys.
 
-For every KPI card, inspect the actual DAX measure and apply these rules:
+## Completion checklist
 
-- **Total Sales:** name it **Gross Merchandise Sales** or **Signed Net Sales** to match the measure; format as GBP (£) with sensible display units (e.g. £10.67M).
-- **Orders:** use a documented distinct-invoice definition; cancellation invoices must be treated consistently.
-- **Average Order Value:** use `DIVIDE([chosen sales measure], [compatible order count])`; format as GBP (£).
-- **Products Sold:** do not use this label for a distinct count of SKUs/descriptions. Use **Distinct Products** for a distinct product count, or **Units Sold** for quantity, as appropriate to the verified DAX expression.
-- Reconcile the displayed values to the Python audit outputs before calling them validated.
-
-## 7. Clean presentation and capture final screenshots
-
-- Hide unnecessary Fields/Data, Filters, and Visualizations panes in the published screenshot; use Reading view or a clean presentation layout.
-- Use consistent GBP formatting and explicit labels on all currency cards.
-- Check that the trend chart has a readable chronological axis and that all report titles are spelled correctly.
-- Export fresh screenshots only after the PBIX is saved and refreshed.
-
-## Validation checklist
-
-- [ ] Python audit ran successfully against the downloaded UCI workbook.
-- [ ] Gross and signed-net sales are reconciled to the chosen DAX definitions.
-- [ ] Cancellation rows and the PAPER CRAFT outlier have been investigated, not guessed.
-- [ ] Month trend uses a sorted Year-Month field.
-- [ ] KPI titles and formats match their measures.
-- [ ] Product rankings exclude the documented non-merchandise descriptions.
-- [ ] PBIX saved and committed; screenshots refreshed from the corrected report.
+- [ ] PBIX backed up before editing.
+- [ ] Source row count and report-model row count verified and definitions documented.
+- [ ] Explicit DAX measures counted from the model.
+- [ ] Sales/cancellation policy documented and reconciled to the Python audit.
+- [ ] Year-Month axis chronologically sorted and December periods separated.
+- [ ] KPI names, formulas, and GBP formats agree.
+- [ ] Product-ranking exclusions documented and applied consistently.
+- [ ] Report refreshed and saved in Power BI Desktop.
+- [ ] Fresh screenshots captured from the corrected report.
+- [ ] Corrected PBIX, screenshots, README figures, and checklist committed together.
