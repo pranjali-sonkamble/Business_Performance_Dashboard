@@ -4,7 +4,7 @@ An end-to-end **retail sales analytics and business intelligence dashboard** bui
 
 ## Project status
 
-**Dashboard repairs are complete and the latest PBIX has been refreshed and saved in Power BI Desktop.** The Year-Month axis and product-visual exclusions have been updated, and the product KPI label distinguishes distinct product descriptions from units sold. The KPI cards have been verified. Power BI Desktop confirms **531,283 rows** in `Table1` and **5 explicit DAX measures** (`Average order Value`, `Distinct Products`, `Total Orders`, `Total Sales`, and `Total Units Sold`). The preview below uses the latest dashboard screenshot. Source-level cancellation completeness and sales inclusion-policy caveats remain documented below.
+**Dashboard prototype:** The repository includes a Power BI preview and a prior Power BI Desktop inspection recorded **531,283 rows** in `Table1` and **5 explicit DAX measures** (`Average order Value`, `Distinct Products`, `Total Orders`, `Total Sales`, and `Total Units Sold`). Sales definitions, cancellation completeness, order count, average order value, and filtered product totals have **not yet been independently reconciled against the source workbook and Python audit**, so KPI values remain provisional. The report should not be described as fully validated until the reconciliation steps below are completed.
 
 ## Business objective
 
@@ -25,11 +25,11 @@ The dashboard is designed to answer:
 ### Latest dashboard
 ![Business Performance Dashboard — latest refreshed report](images/Business_Performance_Dashboard.png)
 
-> Screenshot captured from the latest refreshed and saved Power BI report.
+> Screenshot from the current repository preview; it is not evidence of reconciled KPI values.
 
 ## KPIs
 
-The report shows **Total Sales**, **Total Orders**, **Average Order Value**, and **Distinct Products** (distinct product descriptions, not total units sold). In the current cleaned workbook, the reported checks so far are: sales sum **£10,666,684.54** (displayed as £10.67M), **20,726** distinct invoice IDs (displayed as 21K), AOV **£514.65**, and **4,063** distinct descriptions. These are preliminary source/model checks, not final certified KPIs: the cleaned workbook contains no invoice IDs beginning with `C` and no negative quantity/sales rows, so cancellation completeness and the business definition of net sales remain unverified. Reconcile the figures against the original dataset and the refreshed PBIX before describing them as final.
+The report is designed to show **Total Sales**, **Total Orders**, **Average Order Value**, and **Distinct Products** (distinct product descriptions, not total units sold). Figures previously recorded for the cleaned workbook—sales **£10,666,684.54**, **20,726** distinct invoice IDs, AOV **£514.65**, and **4,063** distinct descriptions—are **provisional and not certified**. The cleaned workbook reportedly contains no invoice IDs beginning with `C` and no negative quantity/sales rows. Until source cancellation completeness and the sales policy are verified, do not interpret the sales total as validated gross or net sales.
 
 ## Data-quality and interpretation notes
 
@@ -51,25 +51,22 @@ The report shows **Total Sales**, **Total Orders**, **Average Order Value**, and
    python analysis/audit_online_retail.py path/to/Online_Retail.xlsx --output-dir outputs
    ```
 4. Open `powerbi/Business_Performance_Dashboard.pbix` in Power BI Desktop and point the model to the local source workbook.
-5. Follow [the Power BI repair checklist](docs/POWER_BI_REPAIR_CHECKLIST.md). Reconcile the Power BI measures against audit output before publishing final figures.
+5. Follow the [reconciliation checklist](docs/POWER_BI_REPAIR_CHECKLIST.md) in the `docs/` folder. Reconcile Power BI measures against audit output before publishing final figures.
 
 The raw dataset is not included in this repository because of its size. The audit script does not modify the source workbook.
 
-## Repair status
+## Validation status
 
-- [x] Verify loaded `Table1` row count: **531,283 rows** (Power BI Desktop status bar).
-- [x] Count explicit DAX measures in the visible model: **5 measures**.
-- [ ] Reconcile sales definitions, cancellation handling, order counts and AOV.
-- [x] Repair and sort the Year-Month axis using a distinct `Year_Month` label and `Month_Sort` key (visual check performed; refresh validation still pending).
-- [x] Rename the product KPI to **Distinct Products** so it is not confused with units sold; final currency/measure formatting check remains pending.
-- [x] Apply visual-level exclusions for `DOTCOM POSTAGE`, `MANUAL`, `POSTAGE`, `CARRIAGE`, and `Bank Charges` to product-ranking visuals; audit the full exclusion policy before calling the merchandise total final.
-- [x] Open, refresh, and save the latest PBIX in Power BI Desktop.
-- [ ] Independently reconcile filtered product totals against the excluded descriptions and document the inclusion policy.
-- [x] Record model counts from Power BI Desktop: **531,283 rows** and **5 explicit DAX measures**.
-- [x] Replace the old dashboard previews with `images/Business_Performance_Dashboard.png`.
-- [ ] Complete final reconciliation before describing the dashboard figures as verified.
+This repository includes a Python audit script, a Power BI report, and a preview image. The following figures remain provisional until the same source workbook, filter policy, and formulas are compared side by side:
 
-See [POWER_BI_REPAIR_CHECKLIST.md](docs/POWER_BI_REPAIR_CHECKLIST.md) for implementation details.
+- Gross sales versus signed net sales and cancellation/credit treatment.
+- Distinct invoice count and the order-count policy.
+- Average order value using a compatible sales numerator and order denominator.
+- Distinct product descriptions versus units sold.
+- Product-ranking totals after the documented non-merchandise exclusions.
+- Monthly totals using a chronological Year-Month key.
+
+Reproduce the source-side calculations with `analysis/audit_online_retail.py`, then compare like-for-like outputs with the refreshed PBIX in Power BI Desktop. Only label the KPI values as reconciled after documenting the chosen definitions and matching results. The implementation detail checklist is maintained in [`docs/POWER_BI_REPAIR_CHECKLIST.md`](docs/POWER_BI_REPAIR_CHECKLIST.md); it is a developer worksheet, not a project deliverable.
 
 ## Data source and licensing
 
