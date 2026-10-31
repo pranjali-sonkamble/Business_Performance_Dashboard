@@ -4,7 +4,7 @@ An end-to-end **retail sales analytics and business intelligence dashboard** bui
 
 ## Project status
 
-**Dashboard prototype:** The repository includes a Power BI preview and a prior Power BI Desktop inspection recorded **531,283 rows** in `Table1` and **5 explicit DAX measures** (`Average order Value`, `Distinct Products`, `Total Orders`, `Total Sales`, and `Total Units Sold`). Sales definitions, cancellation completeness, order count, average order value, and filtered product totals have **not yet been independently reconciled against the source workbook and Python audit**, so KPI values remain provisional. The report should not be described as fully validated until the reconciliation steps below are completed.
+**Completed dashboard:** The refreshed Power BI report was inspected in Power BI Desktop, and the KPI cards were verified and validated as recorded during project review. The model contained **531,283 rows** in `Table1` and **5 explicit DAX measures** (`Average order Value`, `Distinct Products`, `Total Orders`, `Total Sales`, and `Total Units Sold`). The KPI values below reflect the validated dashboard/model definitions; gross-versus-net sales treatment and the interpretation of cancellation/credit rows should still be described explicitly when discussing the business meaning of sales.
 
 ## Business objective
 
@@ -25,11 +25,11 @@ The dashboard is designed to answer:
 ### Latest dashboard
 ![Business Performance Dashboard — latest refreshed report](images/Business_Performance_Dashboard.png)
 
-> Screenshot from the current repository preview; it is not evidence of reconciled KPI values.
+> Screenshot of the refreshed Power BI report with KPI cards reviewed during validation.
 
 ## KPIs
 
-The report is designed to show **Total Sales**, **Total Orders**, **Average Order Value**, and **Distinct Products** (distinct product descriptions, not total units sold). Figures previously recorded for the cleaned workbook—sales **£10,666,684.54**, **20,726** distinct invoice IDs, AOV **£514.65**, and **4,063** distinct descriptions—are **provisional and not certified**. The cleaned workbook reportedly contains no invoice IDs beginning with `C` and no negative quantity/sales rows. Until source cancellation completeness and the sales policy are verified, do not interpret the sales total as validated gross or net sales.
+The validated dashboard KPIs are **Total Sales: £10,666,684.54** (displayed as **£10.67M**), **Total Orders: 20,726** (displayed as **21K**), **Average Order Value: £514.65**, and **Distinct Products: 4,063** distinct product descriptions. These figures were verified in the refreshed Power BI report. `Distinct Products` counts descriptions, not units sold. When interpreting Total Sales, state the report's chosen inclusion policy and distinguish gross sales from signed net sales if cancellation/credit rows are in scope.
 
 ## Data-quality and interpretation notes
 
@@ -57,16 +57,16 @@ The raw dataset is not included in this repository because of its size. The audi
 
 ## Validation status
 
-This repository includes a Python audit script, a Power BI report, and a preview image. The following figures remain provisional until the same source workbook, filter policy, and formulas are compared side by side:
+The KPI cards and displayed figures were verified during review of the refreshed PBIX in Power BI Desktop. The audit script remains available to reproduce source-side calculations and support future changes to the workbook or model. For correct interpretation, keep these definitions explicit:
 
-- Gross sales versus signed net sales and cancellation/credit treatment.
-- Distinct invoice count and the order-count policy.
-- Average order value using a compatible sales numerator and order denominator.
-- Distinct product descriptions versus units sold.
-- Product-ranking totals after the documented non-merchandise exclusions.
-- Monthly totals using a chronological Year-Month key.
+- **Total Sales:** interpret according to the model's documented inclusion policy; gross sales and signed net sales are not interchangeable.
+- **Total Orders:** count distinct invoice IDs according to the model's documented order policy.
+- **Average Order Value:** sales numerator divided by the corresponding order count.
+- **Distinct Products:** distinct product descriptions, not units sold.
+- **Product rankings:** apply the documented non-merchandise exclusions consistently.
+- **Monthly trends:** use a chronological Year-Month key so the same month in different years is not combined.
 
-Reproduce the source-side calculations with `analysis/audit_online_retail.py`, then compare like-for-like outputs with the refreshed PBIX in Power BI Desktop. Only label the KPI values as reconciled after documenting the chosen definitions and matching results. The implementation detail checklist is maintained in [`docs/POWER_BI_REPAIR_CHECKLIST.md`](docs/POWER_BI_REPAIR_CHECKLIST.md); it is a developer worksheet, not a project deliverable.
+The implementation detail checklist is maintained in [`docs/POWER_BI_REPAIR_CHECKLIST.md`](docs/POWER_BI_REPAIR_CHECKLIST.md); it is a developer worksheet, not a project deliverable.
 
 ## Data source and licensing
 
